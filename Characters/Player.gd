@@ -7,6 +7,7 @@ export var spawn_coordinates = Vector2()
 
 #Variáveis
 var player_input = {}
+var jump_enable = false
 
 #Nodes
 onready var controller = get_node("Controller")
@@ -18,7 +19,18 @@ func _physics_process(delta):
 	#Player controls. Teclas podem ser encontradas em Project>>Project Settings>>Input Map
 	player_input.right = Input.is_action_pressed("Right")
 	player_input.left = Input.is_action_pressed("Left")
-	player_input.jump = Input.is_action_pressed("Jump")
+	if jump_enable:
+		player_input.jump = Input.is_action_pressed("Jump")
+	else:
+		player_input.jump = null
 	
 	#Look at deez moves moving
 	controller.move(player_input.right,player_input.left,player_input.jump,delta)
+
+func _on_FloorCheck_body_entered(body):
+	if body != self:
+		jump_enable = true
+
+func _on_FloorCheck_body_exited(body):
+	if body != self:
+		jump_enable = false

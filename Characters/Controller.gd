@@ -43,7 +43,7 @@ func move(input_right,input_left,input_jump,delta):
 			motion.x = 0
 		
 		#Pra pular
-		if rb.test_motion(DOWN) and input_jump == true:
+		if input_jump == true:
 			motion.y = -jump_height
 		
 		rb.apply_central_impulse(motion)
