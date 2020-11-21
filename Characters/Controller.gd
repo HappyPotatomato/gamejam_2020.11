@@ -1,5 +1,5 @@
 #controller.gd
-#Parente tem que ser KinematicBody2D
+#Parente tem que ser RigidBody2D
 extends Node
 
 #Variáveis constantes
@@ -9,34 +9,24 @@ const DOWN 	= Vector2(0,1)
 const UP 	= Vector2(0,-1)
 
 #Variáveis editáveis no Inspector
-export var acceleration = 350
-export var max_speed = 2000
-export var jump_height = 3500
-export var gravity = 200
-export var max_falling_speed = 2000
+export var speed = 200
+export var jump_height = 1000
 
 #Variáveis
-var velocity = Vector2()
+var motion = Vector2()
 var input_disabled = false
 
 #Node
-onready var kb = self.get_parent()
+onready var rb = self.get_parent()
 
 func _ready():
 	pass
 
-func move(input_right,input_left,input_jump):
+func move(input_right,input_left,input_jump,delta):
 	#Verifica se o parente é do tipo exigido
 	if verify() == false:
-		print("Parent is invalid! Parent must be KinematicBody2D")
+		print("Parent is invalid! Parent must be RigidBody2D")
 		return 0
-	
-	#Gravity power engage!
-	if !kb.is_on_floor():
-		velocity.y += gravity
-		
-		#Limita o poder da gravidade :C
-		velocity.y = min(max_falling_speed,velocity.y)
 	
 	#Checa se o input tá habilitado
 	if input_disabled == true:
@@ -44,25 +34,24 @@ func move(input_right,input_left,input_jump):
 	else:
 		#Pro movimento horizontal
 		if input_right == true and input_left == true:
-			velocity.x = lerp(velocity.x,0,0.4)
+			motion.x = 0
 		elif input_right == true:
-			velocity.x += acceleration
-			velocity.x = min(max_speed,velocity.x)
+			motion.x = speed
 		elif input_left == true:
-			velocity.x -= acceleration
-			velocity.x = max(-max_speed,velocity.x)
+			motion.x = -speed
 		else:
-			velocity.x = lerp(velocity.x,0,0.4)
+			motion.x = 0
 		
 		#Pra pular
-		if kb.is_on_floor() and input_jump == true:
-			velocity.y = -jump_height
+		if rb.test_motion(DOWN) and input_jump == true:
+			motion.y = -jump_height
 		
-		#Executa o movimento
-		velocity = kb.move_and_slide(velocity,UP)
+		rb.apply_central_impulse(motion)
+		
+		motion.y = 0
 
 func verify():
-	if kb.is_class("KinematicBody2D"):
+	if rb.is_class("RigidBody2D"):
 		return true
 	else:
 		print("Failed to verify")

@@ -6,7 +6,6 @@
 extents = Vector2( 128, 128 )
 
 [node name="Box" type="RigidBody2D"]
-mass = 60.0
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 1 )
